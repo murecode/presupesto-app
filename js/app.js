@@ -2,18 +2,18 @@ class UI {
 
   constructor() {
 
-    this.budgetFeedback = document.querySelector(".budget-feedback");
+    this.budgetFeedback  = document.querySelector(".budget-feedback");
     this.expenseFeedback = document.querySelector(".expense-feedback");
-    this.budgetForm = document.getElementById("budget-form");
-    this.budgetInput = document.getElementById("budget-input");
-    this.budgetAmount = document.getElementById("budget-amount");
-    this.expenseAmount = document.getElementById("expense-amount");
-    this.balance = document.getElementById("balance");
-    this.balanceAmount = document.getElementById("balance-amount");
-    this.expenseForm = document.getElementById("expense-form");
-    this.expenseInput = document.getElementById("expense-input");
-    this.amountInput = document.getElementById("amount-input");
-    this.expenseList = document.getElementById("expense-list");
+    this.budgetForm      = document.getElementById("budget-form");
+    this.budgetInput     = document.getElementById("budget-input");
+    this.budgetAmount    = document.getElementById("budget-amount");
+    this.expenseAmount   = document.getElementById("expense-amount");
+    this.balance         = document.getElementById("balance");
+    this.balanceAmount   = document.getElementById("balance-amount");
+    this.expenseForm     = document.getElementById("expense-form");
+    this.expenseInput    = document.getElementById("expense-input");
+    this.amountInput     = document.getElementById("amount-input");
+    this.expenseList     = document.getElementById("expense-list");
     this.itemList = [];
     this.itemID = 0;
 
@@ -22,22 +22,23 @@ class UI {
   //Enviar formulario de presupesto
   submitBudgetForm() {
 
-    const value = this.budgetInput.value;
+    const budgetValue = this.budgetInput.value;
 
-    if (value === '' || value < 0) {
+    if (budgetValue === '' || budgetValue < 0) {
       this.budgetFeedback.classList.add('showItem');
       this.budgetFeedback.innerHTML = `<p>Valor no amitido</p>`;
 
       setTimeout(() => {
         this.budgetFeedback.classList.remove('showItem');
-      }, 4000)
+      }, 4000);
+
     } else {
-      this.budgetAmount.textContent = value;
+      this.budgetAmount.textContent = budgetValue;
       this.amountInput.value = '';
       this.showBalance();
     }
 
-  };
+  }
 
   //Mostrar balance
   showBalance() {
@@ -59,7 +60,7 @@ class UI {
       this.balance.classList.add('showBlack');
     }
 
-    console.log(totalBalance)
+    console.log(totalBalance, "agregado al balance")
 
   };
 
@@ -70,7 +71,7 @@ class UI {
 
     if (this.itemList.length > 0) {
       total = this.itemList.reduce((acc, cur) => {
-        console.log(`Total es ${acc} y el valor actual is ${cur.value}`);
+        console.log(`Total es ${acc} y el valor actual is ${cur.value}`, 0);
         acc += cur.amount;
         return acc;
       }, 0)
@@ -84,10 +85,11 @@ class UI {
   //Enviar formulario de gastos
   submitExpenseForm() {
 
-    const expenseVal = this.expenseInput.value;
+    const expenseConcept = this.expenseInput.value;
     const amountVal = this.amountInput.value;
 
-    if (expenseVal === '' || amountVal <= 0 || amountVal === '') {
+    //muestra alerta si...
+    if (expenseConcept === '' || amountVal <= 0 || amountVal === '') {
       this.expenseFeedback.classList.add('showItem');
       this.expenseFeedback.innerHTML = `<p>Los campos deben contener un valor<p/>`
 
@@ -97,32 +99,30 @@ class UI {
 
     } else {
       let amount = parseInt(amountVal);
-      this.expenseInput.value = '';
-      this.amountInput.value = '';
+      // this.expenseInput.value = '';
+      // this.amountInput.value = '';
 
-      //objeto gasto
+      //se crea un objeto gasto
       let gasto = {
         id: this.itemID,
-        title: this.expenseVal,
+        title: expenseConcept,
         amount: amount,
       }
 
-      this.itemID++;
-      this.itemList.push(gasto); //envia objeto al array
-      this.addExpense(gasto); //agrega las props del obj al registro
+      this.itemID++; // se incrementa su indice
+      this.itemList.push(gasto); //se agrega objeto al array
+      this.addExpense(gasto); // agrega las props del obj al registro
       this.showBalance();
 
-      console.log(typeof expenseVal)
-      console.log(typeof amountVal)
+      console.log(typeof expenseConcept)
+      console.log(typeof amount)
       console.log(this.itemID);
-      console.log();
-      console.log();
       console.log(typeof gasto.title);
     }
 
-  };
+  }
 
-  //Crea y muestra el elem HTML con los registros de gastos
+  //Crea el elem HTML con los registros de gastos
   addExpense(gasto) {
 
     const itemGasto = document.createElement('div');
@@ -130,33 +130,31 @@ class UI {
     itemGasto.innerHTML = `
     <div class="expense-item d-flex justify-content-between align-items-baseline">
 
-    <h6 class="expense-title mb-0 text-uppercase list-item">${gasto.title}</h6>
-    <h5 class="expense-amount mb-0 list-item">${gasto}t</h5>
+    <h6 class="expense-title mb-0 text-uppercase list-item">${ gasto.title }</h6>
+    <h5 class="expense-amount mb-0 list-item">${ gasto.amount }</h5>
 
     <div class="expense-icons list-item">
-
-     <a href="#" class="edit-icon mx-2" data-id="${gasto.id}">
+     <a href="#" class="edit-icon mx-2" data-id="">
       <i class="fas fa-edit"></i>
      </a>
-     <a href="#" class="delete-icon" data-id="${gasto.id}">
+     <a href="#" class="delete-icon" data-id="">
       <i class="fas fa-trash"></i>
      </a>
     </div>
+    
    </div>
     `;
 
     this.expenseList.appendChild(itemGasto)
     console.log(this.itemList)
 
-  };
-
-
+  }
 
 }; //END - UI CLASS
 
 //LISTENERS
 function evenListeners() {
-  const budgetForm = document.getElementById('budget-form');
+  const budgetForm  = document.getElementById('budget-form');
   const expenseForm = document.getElementById('expense-form');
   const expenseList = document.getElementById('expense-list');
 

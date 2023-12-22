@@ -31,20 +31,18 @@ class UI {
       setTimeout(() => {
         this.budgetFeedback.classList.remove('showItem');
       }, 4000);
-
     } else {
       this.budgetAmount.textContent = budgetValue;
       this.amountInput.value = '';
       this.showBalance();
     }
-
   }
 
   //Mostrar balance
   showBalance() {
 
     const expense = this.totalExpense();
-    const totalBalance = parseInt(this.budgetAmount.textContent) - expense;
+    const totalBalance = parseInt(this.budgetAmount.textContent) - expense; // se parsea el string a number
     this.balanceAmount.textContent = totalBalance;
 
     if (totalBalance < 0) {
@@ -62,7 +60,7 @@ class UI {
 
     console.log(totalBalance, "agregado al balance")
 
-  };
+  }
 
   //Total de gastos
   totalExpense() {
@@ -79,8 +77,7 @@ class UI {
 
     this.expenseAmount.textContent = total;
     return total;
-
-  };
+  }
 
   //Enviar formulario de gastos
   submitExpenseForm() {
@@ -96,11 +93,10 @@ class UI {
       setTimeout(() => {
         this.expenseFeedback.classList.remove('showItem');
       }, 4000)
-
     } else {
       let amount = parseInt(amountVal);
-      // this.expenseInput.value = '';
-      // this.amountInput.value = '';
+      this.expenseInput.value = '';
+      this.amountInput.value = '0';
 
       //se crea un objeto gasto
       let gasto = {
@@ -109,17 +105,14 @@ class UI {
         amount: amount,
       }
 
-      this.itemID++; // se incrementa su indice
-      this.itemList.push(gasto); //se agrega objeto al array
-      this.addExpense(gasto); // agrega las props del obj al registro
+      this.itemID++; // genera el indice para cada elem insertado en el itemList
+      this.itemList.push(gasto); //se agrega elem al itemList
+      this.addExpense(gasto); // agrega las props del elem registro
       this.showBalance();
 
-      console.log(typeof expenseConcept)
-      console.log(typeof amount)
-      console.log(this.itemID);
-      console.log(typeof gasto.title);
-    }
+      console.log( "itemList", this.itemList )
 
+    }
   }
 
   //Crea el elem HTML con los registros de gastos
@@ -134,25 +127,55 @@ class UI {
     <h5 class="expense-amount mb-0 list-item">${ gasto.amount }</h5>
 
     <div class="expense-icons list-item">
-     <a href="#" class="edit-icon mx-2" data-id="">
-      <i class="fas fa-edit"></i>
+     <a href="#" class="edit-icon" data-id="${ gasto.id }">
+      <span>✏️</span>
      </a>
-     <a href="#" class="delete-icon" data-id="">
-      <i class="fas fa-trash"></i>
+     <a href="#" class="delete-icon" data-id="${ gasto.id }">
+      <span>🗑️</span>
      </a>
     </div>
     
    </div>
     `;
-
     this.expenseList.appendChild(itemGasto)
-    console.log(this.itemList)
-
   }
+
+  editExpense(elem) {
+
+    let id = parseInt( elem.dataset.id ) // 1.
+    let parent = elem.parentElement.parentElement.parentElement; // 2.
+
+    this.expenseList.removeChild( parent ) // 3.
+
+    let itemGasto = this.itemList.filter( function(item) { // 4.
+      return item.id === id; 
+    })
+
+    this.expenseInput.value = itemGasto[0].title // 5.
+    this.amountInput.value  = itemGasto[0].amount
+
+    let temporalList = this.itemList.filter( function(item) { // 6.
+      return item.id !== id;
+    })
+    this.itemList = temporalList;
+
+    console.log( itemGasto )
+
+    // 1. Toma el valor del attr 'data-id' del elemento que es una cadena y la parsea a un numero
+    // 2. Desde el nodo hijo se desplaza de manera jerarquica a traves de los nodos padres
+    // 3. Elimina el elemento (nodo) del arbol DOM
+    // 4. Compara el 'id' del objeto fitrado del arr con el 'id' del nodo y retorna un nuevo arr con ese objeto
+    // 5. Asigna y muestra en los inputs los valores de 'itemGasto' traidos de la matriz 'itemList' 
+  }
+
+  deleteExpense(elem) {
+    console.log("Eliminar")
+  }
+
 
 }; //END - UI CLASS
 
-//LISTENERS
+//LISTENERS PARA LOS BOTONES
 function evenListeners() {
   const budgetForm  = document.getElementById('budget-form');
   const expenseForm = document.getElementById('expense-form');
@@ -165,19 +188,25 @@ function evenListeners() {
   budgetForm.addEventListener('submit', (evt) => {
     evt.preventDefault()
     ui.submitBudgetForm();
-  });
+  })
 
   // expense form submit 
   expenseForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     ui.submitExpenseForm();
-  });
+  })
 
   // expense click
   expenseList.addEventListener('click', (evt) => {
     evt.preventDefault();
-    ui.addExpenseList();
-  });
+    if (evt.target.parentElement.classList.contains('edit-icon')) {
+      ui.editExpense(evt.target.parentElement)
+    } else if (evt.target.parentElement.classList.contains('delete-icon')) {
+      ui.deleteExpense(evt.target.parentElement)
+    }
+
+  })
+
 
 }
 
